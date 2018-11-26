@@ -12,7 +12,7 @@ export default (state = initialState, action) => {
         geometry: action.geometry,
         mesh: action.mesh
       })
-     case 'ADD_TO_SCENE' :
+    case 'ADD_TO_SCENE' :
       action.scene.add(state.mesh)
       return state
     default:

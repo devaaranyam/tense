@@ -3,7 +3,7 @@ import './App.css'
 import { Canvas, Toolbar } from './components'
 import { Box, Grommet, Grid } from 'grommet'
 class App extends Component {
-  constructor(props){
+  constructor (props) {
     super(props)
     this.store = this.props.store
   }
@@ -23,7 +23,7 @@ class App extends Component {
             <Toolbar store={this.store} />
           </Box>
           <Box gridArea='canvas' fill >
-            <Canvas store={this.store}/>
+            <Canvas store={this.store} />
           </Box>
         </Grid>
       </Grommet>
