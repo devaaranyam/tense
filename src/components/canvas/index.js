@@ -1,44 +1,71 @@
 import React, { Component } from 'react'
-import { Scene, PerspectiveCamera, WebGLRenderer } from 'three'
-import { Box } from 'grommet'
+
+import { connect } from 'react-redux'
 import { addToScene } from '../../actions'
-import OrbitControls from '../../controls/orbit'
-let canvas
-export class Canvas extends Component {
+
+import { Scene, PerspectiveCamera, WebGLRenderer } from 'three'
+
+import { Box } from 'grommet'
+import OrbitControls from './controls/orbit'
+
+class Canvas extends Component {
   constructor (props) {
     super(props)
-    this.store = this.props.store
-    this.state = {
-      renderer: new WebGLRenderer({ antialias: true })
-    }
-    this.handleOnClick = this.handleOnClick.bind(this)
+    this.start = this.start.bind(this)
+    this.stop = this.stop.bind(this)
+    this.animate = this.animate.bind(this)
   }
   componentDidMount () {
-    let { renderer } = this.state
-    let scene = new Scene()
-    let camera = new PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000)
-    let controls = new OrbitControls(camera)
-    camera.position.z = 5
-    controls.update()
-    this.state.camera = camera
-    this.state.scene = scene
-    window.scene = scene
-    renderer.setSize(canvas.offsetWidth, canvas.offsetHeight)
-    canvas.append(renderer.domElement)
-    let animate = () => {
-      window.requestAnimationFrame(animate)
-      renderer.render(this.state.scene, this.state.camera)
-      controls.update()
-    }
-    animate()
+    const width = this.canvas.offsettWidth
+    const height = this.canvas.offsetHeight
+
+    this.scene = new Scene()
+
+    this.camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
+    this.camera.position.z = 5
+
+    this.controls = new OrbitControls(this.camera)
+
+    this.renderer = new WebGLRenderer({ antialias: true })
+    this.renderer.setClearColor('#000000')
+    this.renderer.setSize(width, height)
+    this.canvas.append(this.renderer.domElement)
+    this.start()
+    window.addEventListener('resize', this.onWindowResize.bind(this))
   }
-  handleOnClick () {
-    this.store.dispatch(addToScene(this.state.scene))
+
+  onWindowResize () {
+    const width = this.canvas.offsettWidth
+    const height = this.canvas.offsetHeight
+    this.camera.aspect = width / height
+    this.camera.updateProjectionMatrix()
+    this.renderer.setSize(width, height)
+  }
+
+  animate () {
+    this.controls.update()
+    this.renderer.render(this.scene, this.camera)
+    this.frameId = window.requestAnimationFrame(this.animate)
+  }
+
+  renderScene () {
+    this.renderer.render(this.scene, this.camera)
+  }
+
+  start () {
+    if (!this.frameId) {
+      this.frameId = window.requestAnimationFrame(this.animate)
+    }
+  }
+  stop () {
+    window.cancelAnimationFrame(this.frameId)
   }
 
   render () {
     return (
-      <Box onClick={this.handleOnClick} ref={element => { canvas = element }} fill />
+      <Box ref={element => { this.canvas = element }} fill />
     )
   }
 }
+
+export default connect(null, null)(Canvas)

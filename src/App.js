@@ -1,7 +1,9 @@
 import React, { Component } from 'react'
 import './App.css'
-import { Canvas, Toolbar } from './components'
+import Canvas from './components/canvas'
+import Toolbar from './components/toolbar'
 import { Box, Grommet, Grid } from 'grommet'
+
 class App extends Component {
   constructor (props) {
     super(props)
@@ -12,14 +14,16 @@ class App extends Component {
       <Grommet full>
         <Grid
           columns={['small', 'flex']}
-          rows={['flex']}
+          rows={['30px', 'flex']}
           areas={[
-            { name: 'toolbar', start: [0, 0], end: [0, 0] },
-            { name: 'canvas', start: [1, 0], end: [1, 0] }
+            { name: 'titlebar', start: [0, 0], end: [1, 0] },
+            { name: 'toolbar', start: [0, 1], end: [0, 1] },
+            { name: 'canvas', start: [1, 1], end: [1, 1] }
           ]}
           fill
         >
-          <Box gridArea='toolbar' width='small' >
+          <Box gridArea='titlebar' pad='xsmall' justify='center' style={{ '-webkit-app-region': 'drag' }}><b>Tense</b></Box>
+          <Box gridArea='toolbar' width='small' fill>
             <Toolbar store={this.store} />
           </Box>
           <Box gridArea='canvas' fill >

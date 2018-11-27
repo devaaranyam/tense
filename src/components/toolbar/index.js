@@ -1,12 +1,16 @@
 import React, { Component } from 'react'
+
+import { connect } from 'react-redux'
 import { selectTool } from '../../actions'
+
 import { BoxGeometry, MeshBasicMaterial, Mesh, CylinderGeometry } from 'three'
+
 import { Button } from 'grommet'
 import { Cube } from 'grommet-icons'
-export class Toolbar extends Component {
-  constructor (props) {
-    super(props)
-    this.store = this.props.store
+import  CylinderIcon  from '../../icons/cylinderIcon'
+class Toolbar extends Component {
+  constructor () {
+    super()
     this.handleOnClick = this.handleOnClick.bind(this)
   }
   handleOnClick (type) {
@@ -23,14 +27,15 @@ export class Toolbar extends Component {
       default:
     }
     let mesh = new Mesh(geometry, material)
-    console.log(this.store.dispatch(selectTool(geometry, material, mesh)))
+    this.props.selectTool(geometry, material, mesh)
   }
   render () {
     return (
       <div>
-        <Button icon={<Cube />} plain label='cube' onClick={() => this.handleOnClick('cube')} />
-        <Button icon={<Cube />} plain label='cylinder' onClick={() => this.handleOnClick('cylinder')} />
+        <Button icon={<Cube />}  onClick={() => this.handleOnClick('cube')} />
       </div>
     )
   }
 }
+
+export default connect(null, { selectTool })(Toolbar)
