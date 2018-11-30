@@ -1,15 +1,19 @@
-export const selectTool = (geometry,material,mesh) => {
+export const selectTool = (tool) => {
   return {
     type: 'SELECT_TOOL',
-    geometry : geometry, 
-    material : material,
-    mesh : mesh
+    selectedTool: tool
   }
 }
 
- export const addToScene = (scene,mesh) => {   return {
-    type: 'ADD_TO_SCENE',
-    scene : scene,
-    mesh : mesh
+export const addToScene = () => {
+  return {
+    type: 'ADD_TO_SCENE'
   }
- }
+}
+
+export const storeScene = (scene) => {
+  return {
+    type: 'STORE_SCENE',
+    scene: scene
+  }
+}

@@ -1,19 +1,42 @@
+import * as THREE from 'three'
+
 const initialState = {
-  material: null,
-  geometry: null,
-  mesh: null
+  scene: null,
+  selectedTool: {
+    id: null,
+    name: null,
+    parsedProps: {
+      geometry: null,
+      material: null
+    },
+    props: null
+  }
 }
 export default (state = initialState, action) => {
+  let parseProperties = (properties) => {
+    let parsedProps = {}
+    let { geometry, material } = properties
+    parsedProps.geometry = new THREE[geometry.type](geometry.properties)
+    parsedProps.material = new THREE[geometry.type](material.properties)
+    return parsedProps
+  }
+  if (action.type === 'SELECT_TOOL') {
+    let parsedProps = parseProperties(action.selectedTool.properties)
+    return Object.assign({}, state, {
+      selectedTool: {
+        id: action.selectedTool.id,
+        name: action.selectedTool.label,
+        properties: action.selectedTool.properties,
+        parsedProps
+      }
+    })
+  }
   switch (action.type) {
-    case 'SELECT_TOOL':
-      console.log('You selected a tool.')
-      return Object.assign({}, state, {
-        material: action.material,
-        geometry: action.geometry,
-        mesh: action.mesh
-      })
     case 'ADD_TO_SCENE' :
-      action.scene.add(state.mesh)
+      state.scene = action.scene
+      return state
+    case 'STORE_SCENE' :
+      if (!state.scene) state.scene = action.scene
       return state
     default:
       return state

@@ -1,71 +1,73 @@
 import React, { Component } from 'react'
 
 import { connect } from 'react-redux'
-import { addToScene } from '../../actions'
+import { addToScene, storeScene } from '../../actions'
 
-import { Scene, PerspectiveCamera, WebGLRenderer } from 'three'
+import { Scene, PerspectiveCamera, WebGLRenderer, GridHelper, Vector3, ArrowHelper } from 'three'
 
-import { Box } from 'grommet'
-import OrbitControls from './controls/orbit'
+import { Box, Layer, Text, Button } from 'grommet'
+import { StatusGood, FormClose } from 'grommet-icons'
+
+import Controls from './controls'
 
 class Canvas extends Component {
   constructor (props) {
     super(props)
-    this.start = this.start.bind(this)
-    this.stop = this.stop.bind(this)
+    this.state = {
+      notificiationOpen: true
+    }
+    this.handleOnClick = this.handleOnClick.bind(this)
+    this.onWindowResize = this.onWindowResize.bind(this)
     this.animate = this.animate.bind(this)
+    window.addEventListener('resize', this.onWindowResize)
   }
+  componentWillUpdate () {
+
+  }
+
   componentDidMount () {
-    const width = this.canvas.offsettWidth
-    const height = this.canvas.offsetHeight
-
     this.scene = new Scene()
+    storeScene(this.scene)
+    var size = 10
+    var divisions = 10
+    var gridHelper = new GridHelper(size, divisions, 0xfffff, 0xffffff)
+    this.scene.add(gridHelper)
+    var dir = new Vector3(1, 2, 0)
 
-    this.camera = new PerspectiveCamera(75, width / height, 0.1, 1000)
+    // normalize the direction vector (convert to vector of length 1)
+    dir.normalize()
+    window.scene = this.scene
+    let rect = this.canvas.getBoundingClientRect()
+    this.camera = new PerspectiveCamera(75, rect.width / rect.height, 0.1, 1000)
     this.camera.position.z = 5
-
-    this.controls = new OrbitControls(this.camera)
-
-    this.renderer = new WebGLRenderer({ antialias: true })
-    this.renderer.setClearColor('#000000')
-    this.renderer.setSize(width, height)
+    this.renderer = new WebGLRenderer({ antialias: true, alpha: true })
+    this.controls = new Controls(this.camera,this.canvas)
+    this.renderer.setSize(rect.width, rect.height)
+    this.animate()
     this.canvas.append(this.renderer.domElement)
-    this.start()
-    window.addEventListener('resize', this.onWindowResize.bind(this))
   }
-
-  onWindowResize () {
-    const width = this.canvas.offsettWidth
-    const height = this.canvas.offsetHeight
-    this.camera.aspect = width / height
-    this.camera.updateProjectionMatrix()
-    this.renderer.setSize(width, height)
-  }
-
   animate () {
+    window.requestAnimationFrame(this.animate)
     this.controls.update()
     this.renderer.render(this.scene, this.camera)
-    this.frameId = window.requestAnimationFrame(this.animate)
   }
 
-  renderScene () {
-    this.renderer.render(this.scene, this.camera)
+  handleOnClick () {
+    let { addToScene } = this.props
+    addToScene(this.scene)
   }
-
-  start () {
-    if (!this.frameId) {
-      this.frameId = window.requestAnimationFrame(this.animate)
-    }
-  }
-  stop () {
-    window.cancelAnimationFrame(this.frameId)
+  onWindowResize () {
+    let rect = this.canvas.getBoundingClientRect()
+    this.camera.aspect = rect.width / rect.height
+    this.camera.updateProjectionMatrix()
+    this.renderer.setSize(rect.width, rect.height)
   }
 
   render () {
     return (
-      <Box ref={element => { this.canvas = element }} fill />
+      <Box background='brand' ref={element => { this.canvas = element }} style={{ position: 'absolute', top: '0px', width: 'calc(100vw - 200px)', height: '100vh' }} onClick={this.handleOnClick} fill  />
     )
   }
 }
 
-export default connect(null, null)(Canvas)
+export default connect(null, { addToScene })(Canvas)

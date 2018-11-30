@@ -8,7 +8,7 @@
 
 import * as THREE from 'three'
 
-export default class OrbitControls extends THREE.EventDispatcher {
+export default class Controls extends THREE.EventDispatcher {
   constructor (object, domElement) {
     super()
 
@@ -202,7 +202,6 @@ export default class OrbitControls extends THREE.EventDispatcher {
       this.panOffset.multiplyScalar(1 - this.dampingFactor)
     } else {
       this.sphericalDelta.set(0, 0, 0)
-
       this.panOffset.set(0, 0, 0)
     }
 

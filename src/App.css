@@ -30,3 +30,19 @@
     transform: rotate(360deg);
   }
 }
+
+.circle {
+  border-radius:50%;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  background-color: red;
+}
+
+.circle:hover {
+  cursor: pointer;
+}
+
+.red { background-color: #C40A0F; }
+.yellow { background-color: #F29F25; }
+.green { background-color: #8D9E2B; }
